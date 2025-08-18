@@ -1,40 +1,166 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const QuizApp());
+  runApp(QuizApp());
 }
 
 class QuizApp extends StatelessWidget {
-  const QuizApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      title: 'Quiz Revision App',
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
       home: SubjectPage(),
     );
   }
 }
 
+// ================= SUBJECT PAGE =================
 class SubjectPage extends StatelessWidget {
-  final Map<String, Map<String, List<Map<String, String>>>> data = {
-    "Math": {
-      "Algebra": [
-        {"q": "x+2=5, x=?", "a": "3"},
-        {"q": "2x=10, x=?", "a": "5"}
-      ],
-      "Geometry": [
-        {"q": "Triangle का sum of angles?", "a": "180°"}
-      ],
-    },
-    "Science": {
-      "Physics": [
-        {"q": "Speed का formula?", "a": "Distance/Time"}
-      ],
-      "Chemistry": [
-        {"q": "H2O क्या है?", "a": "Water"}
-      ],
-      "Biology": [
+  final List<String> subjects = [
+    "Math",
+    "Science (Physics, Chemistry, Biology)",
+    "SST (History, Geography, Political Science, Economics, Disaster Management)",
+    "Hindi",
+    "Maithili",
+    "English"
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Select Subject")),
+      body: ListView.builder(
+        itemCount: subjects.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(subjects[index]),
+            trailing: Icon(Icons.arrow_forward_ios),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChapterPage(subject: subjects[index]),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ================= CHAPTER PAGE =================
+class ChapterPage extends StatelessWidget {
+  final String subject;
+
+  ChapterPage({required this.subject});
+
+  final Map<String, List<String>> chapters = {
+    "Math": ["Algebra", "Geometry", "Mensuration"],
+    "Science (Physics, Chemistry, Biology)": ["Physics Basics", "Chemistry Basics", "Biology Basics"],
+    "SST (History, Geography, Political Science, Economics, Disaster Management)":
+        ["History: Ancient India", "Geography: Earth", "Economics: Money", "Disaster Management"],
+    "Hindi": ["कविता", "गद्यांश"],
+    "Maithili": ["कविता", "निबंध"],
+    "English": ["Grammar", "Literature"]
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(subject)),
+      body: ListView(
+        children: chapters[subject]!.map((chapter) {
+          return ListTile(
+            title: Text(chapter),
+            trailing: Icon(Icons.arrow_forward_ios),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      QuestionPage(subject: subject, chapter: chapter),
+                ),
+              );
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+// ================= QUESTION PAGE =================
+class QuestionPage extends StatelessWidget {
+  final String subject;
+  final String chapter;
+
+  QuestionPage({required this.subject, required this.chapter});
+
+  final Map<String, List<Map<String, String>>> questions = {
+    "Algebra": [
+      {
+        "q": "What is (a+b)² ?",
+        "a": "a² + 2ab + b²"
+      },
+      {
+        "q": "Solve: 2x+3=7",
+        "a": "x = 2"
+      }
+    ],
+    "Physics Basics": [
+      {
+        "q": "What is Newton's First Law?",
+        "a": "A body remains at rest or in uniform motion unless acted upon by force."
+      },
+      {
+        "q": "What is the speed of light?",
+        "a": "3 × 10⁸ m/s"
+      }
+    ],
+    "कविता": [
+      {
+        "q": "भारत के प्रसिद्ध कवि का नाम बताओ?",
+        "a": "सूरदास, तुलसीदास, कबीर"
+      }
+    ],
+    "Grammar": [
+      {
+        "q": "What is a noun?",
+        "a": "A word used as the name of a person, place, or thing."
+      }
+    ]
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(chapter)),
+      body: ListView(
+        children: questions[chapter] != null
+            ? questions[chapter]!.map((qa) {
+                return Card(
+                  margin: EdgeInsets.all(10),
+                  child: ListTile(
+                    title: Text("Q: ${qa['q']}"),
+                    subtitle: Text("Ans: ${qa['a']}"),
+                  ),
+                );
+              }).toList()
+            : [
+                Center(
+                    child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text("No questions added yet."),
+                ))
+              ],
+      ),
+    );
+  }
+}
+"Biology": [
         {"q": "Human Heart के chambers?", "a": "4"}
       ],
     },
